@@ -6,15 +6,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(userHandler *http.UserHandler) *gin.Engine {
-	r := gin.Default()
-
-	userRoutes := r.Group("/users")
-	{
-		userRoutes.POST("/", userHandler.CreateUser)
-		userRoutes.POST("/update", userHandler.UpdateUser)
-		userRoutes.GET("/:id", userHandler.GetUserById)
-		userRoutes.POST("/login", userHandler.LoginUser)
-	}
-	return r
+type Router struct {
+	handler *http.UserHandler
 }
+
+func NewRouter(handler *http.UserHandler) *Router {
+	return &Router{handler: handler}
+}
+
+func (r *Router) RegisterRoutes(engine *gin.Engine) {
+
+	userRoutes := engine.Group("/users")
+	{
+		userRoutes.POST("/", r.handler.CreateUser)
+		userRoutes.POST("/update", r.handler.UpdateUser)
+		userRoutes.GET("/:id", r.handler.GetUserById)
+		userRoutes.POST("/login", r.handler.LoginUser)
+	}
+
+}
+
+// registerRoutes defines the routes for the applicatio
