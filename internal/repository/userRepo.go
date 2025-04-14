@@ -163,3 +163,12 @@ func (r *userRepositoryDB) NewSession(session domain.Session) (domain.Session, e
 
 	return session, nil
 }
+
+func (r *userRepositoryDB) GetUserBySessionId(Id int) (domain.Session, error) {
+	var session domain.Session
+	err := r.db.QueryRow(query.SEARCH_USER_BY_SESSION, Id).Scan(&session.ID, &session.UserID, &session.CreationDate, &session.IPAddres, &session.Comments)
+	if err != nil {
+		return domain.Session{}, err
+	}
+	return session, nil
+}

@@ -34,11 +34,11 @@ func (usp *UserCase) LoginUser(email string, pass string, IPAddress string, come
 
 	user, err := usp.userRepo.GetUserByEmail(email)
 	if err != nil {
-		return domain.Session{}, errors.New("Usuario no encontrado")
+		return domain.Session{}, errors.New("usuario no encontrado")
 	}
 
 	if user.Pass != pass {
-		return domain.Session{}, errors.New("Contraseña incorrecta")
+		return domain.Session{}, errors.New("contraseña incorrecta")
 	}
 
 	ses, err := usp.userRepo.NewSession(domain.Session{
@@ -48,5 +48,5 @@ func (usp *UserCase) LoginUser(email string, pass string, IPAddress string, come
 		Comments:     coment,
 	})
 
-	return domain.Session{ID: ses.ID}, err
+	return ses, err
 }

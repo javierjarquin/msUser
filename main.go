@@ -27,10 +27,31 @@ func main() {
 	if err != nil {
 		log.Fatal("Error al conectar a la BD:", err)
 	}
+	tandaRepo, err := repository.OpenTandaDb(cfg.DBUrl)
+	if err != nil {
+		log.Fatal("Error al conectar a la BD:", err)
+	}
+	tandausuariorepo, err := repository.OpenTandaUsuarioDb(cfg.DBUrl)
+	if err != nil {
+		log.Fatal("Error al conectar a la BD:", err)
+	}
+	tandapagorepo, err := repository.OpenTandaPagoDb(cfg.DBUrl)
+	if err != nil {
+		log.Fatal("Error al conectar a la BD:", err)
+	}
 
-	// Iniciar dependencias
+	// Iniciar dependencias usuario
 	userUseCase := usercase.NewUserCase(userRepo)
 	userHandler := http.NewUserHandler(userUseCase)
+	// Iniciar dependencias tanda
+	tandaUseCase := usercase.NewTandaCase(tandaRepo)
+	tandaHandler := http.NewTandaHandler(tandaUseCase)
+	// Iniciar dependencias tanda usuario
+	tandaUsuarioUseCase := usercase.NewTandaUsuarioCase(tandausuariorepo)
+	tandaUsuarioHandler := http.NewTandaUsuarioHandler(tandaUsuarioUseCase)
+	// Iniciar dependencias tanda pago
+	tandaPagoUseCase := usercase.NewTandaPagoCase(tandapagorepo)
+	tandaPagoHandler := http.NewTandaPagoHandler(tandaPagoUseCase)
 
 	// Crear el router de Gin
 	r := gin.Default()
@@ -38,9 +59,9 @@ func main() {
 	// Configurar CORS dinámico usando gin-contrib/cors
 	corsConfig := cors.Config{
 		AllowOrigins: []string{
-			"http://localhost:33313", // Puerto de Flutter (ajustado a tu configuración)
-			"http://localhost:4200",  // Otro puerto común para aplicaciones frontend (Angular, por ejemplo)
-			"http://localhost:8080",  // Si tienes otros orígenes locales en tu máquina, agrégales aquí
+			"*",                     // Puerto de Flutter (ajustado a tu configuración)
+			"http://localhost:4200", // Otro puerto común para aplicaciones frontend (Angular, por ejemplo)
+			"http://localhost:8080", // Si tienes otros orígenes locales en tu máquina, agrégales aquí
 		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
@@ -60,6 +81,9 @@ func main() {
 
 	// Registrar rutas
 	router.NewRouter(userHandler).RegisterRoutes(r)
+	router.NewTandaRouter(tandaHandler).RegisterRoutes(r)
+	router.NewTandaUsuarioRouter(tandaUsuarioHandler).RegisterRoutes(r)
+	router.NewTandaPagoRouter(tandaPagoHandler).RegisterRoutes(r)
 
 	// Iniciar servidor
 	log.Println("Servidor corriendo en el puerto", cfg.Port)
