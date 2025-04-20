@@ -138,24 +138,23 @@ func (r *userRepositoryDB) GetTandaByUserId(Id int) ([]domain.Tanda, error) {
 	for rows.Next() {
 		var tanda domain.Tanda
 		var startDate, endDate []uint8
-		err := rows.Scan(&tanda.ID, &tanda.Alias, &tanda.PoolAmount, &tanda.Period, &tanda.Members, &startDate, &endDate, &tanda.TotalEndPool, &tanda.CreationUserId)
+		err := rows.Scan(&tanda.ID, &tanda.Alias, &tanda.PoolAmount, &tanda.Period, &tanda.Members, &startDate, &endDate, &tanda.TotalEndPool, &tanda.UserCreation)
 		if err != nil {
 			return []domain.Tanda{}, err
 		}
 		if len(startDate) > 0 {
-			tanda.StartDate, err = time.Parse("2006-01-02 15:04:05", string(startDate))
+			parsedStartDate, err := time.Parse(time.RFC3339, string(startDate))
 			if err != nil {
 				return []domain.Tanda{}, err
 			}
+			tanda.StartDate = parsedStartDate
 		}
 		if len(endDate) > 0 {
-			tanda.EndDate, err = time.Parse("2006-01-02 15:04:05", string(endDate))
+			parsedEndDate, err := time.Parse(time.RFC3339, string(endDate))
 			if err != nil {
 				return []domain.Tanda{}, err
 			}
-		}
-		if err != nil {
-			return []domain.Tanda{}, err
+			tanda.EndDate = parsedEndDate
 		}
 		tandas = append(tandas, tanda)
 	}

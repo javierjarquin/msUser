@@ -13,7 +13,7 @@ const (
 	NEW_TANDA                           = "Insert into Tanda (alias, poolAmount, period, members, starDate, endDate, totalEndPool, creationUserId) Values (?, ?, ?, ?, ?, ?, ?, ?)"
 	UPDATE_TANDA                        = "Update Tanda set alias = ?, poolAmount = ?, period = ?, members = ?, starDate = ?, endDate = ?, totalEndPool = ? where id = ?"
 	SEARCH_TANDA_BY_ID                  = "Select id, alias, poolAmount, period, members, starDate, endDate, totalEndPool, creationUserId from Tanda where id = ?"
-	SEARCH_TANDA_BY_USER_ID             = "Select id, alias, poolAmount, period, members, starDate, endDate, totalEndPool, creationUserId from Tanda where creationUserId = ?"
+	SEARCH_TANDA_BY_USER_ID             = "Select t.id, t.alias, t.poolAmount, CASE t.period WHEN 'SL' THEN 'Semanal' WHEN 'QL' THEN 'Quincenal' WHEN 'ML' THEN 'Mensual' WHEN 'BL' THEN 'Bimestral' WHEN 'TL' THEN 'Trimestral' ELSE 'Desconocido' END AS period, t.members, t.starDate, t.endDate, t.totalEndPool, concat(u.Name, ' ', u.LastName) usercreation from Tanda t, Usuario u where t.creationUserId = u.id and t.creationuserid = ?"
 	NEW_TANDAUSUARIO                    = "Insert into TandaUsuario (tandaId, memberId, numberTicket, datePay, status) Values (?, ?, ?, ?, ?)"
 	UPDATE_TANDAUSUARIO                 = "Update TandaUsuario set numberTicket = ?, datePay = ?, status = ? where id = ?"
 	SEARCH_TANDAUSUARIO_BY_TANDA_ID     = "Select id, tandaId, memberId, numberTicket, datePay, status from TandaUsuario where tandaId = ?"

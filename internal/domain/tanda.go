@@ -12,4 +12,5 @@ type Tanda struct {
 	EndDate        time.Time `json:"endDate"`
 	TotalEndPool   float64   `json:"totalEndPool"`
 	CreationUserId int       `json:"creationUserId"`
+	UserCreation   string    `json:"userCreation"`
 }
